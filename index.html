@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List with Reminders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        #todo-container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, select {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            color: white;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        li {
+            background: #e9ecef;
+            padding: 10px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            border-radius: 5px;
+        }
+        .delete-btn {
+            background-color: red;
+            border: none;
+            padding: 5px 10px;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .delete-btn:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>To-Do List with Reminders</h1>
+    <div id="todo-container">
+        <input type="text" id="task-input" placeholder="Enter a task">
+        <select id="reminder-time">
+            <option value="5">5 sec</option>
+            <option value="10">10 sec</option>
+            <option value="30">30 sec</option>
+            <option value="60">1 min</option>
+        </select>
+        <button onclick="addTask()">Add</button>
+        <ul id="task-list"></ul>
+    </div>
+
+    <script>
+        function requestNotificationPermission() {
+            if ("Notification" in window) {
+                Notification.requestPermission();
+            }
+        }
+
+        function addTask() {
+            let taskInput = document.getElementById("task-input");
+            let reminderTime = document.getElementById("reminder-time").value;
+            let taskText = taskInput.value.trim();
+            if (taskText === "") return;
+
+            let li = document.createElement("li");
+            li.innerHTML = taskText + '<button class="delete-btn" onclick="removeTask(this)">X</button>';
+
+            document.getElementById("task-list").appendChild(li);
+            taskInput.value = ""; // Clear input field
+
+            // Set a reminder notification
+            setTimeout(() => {
+                showNotification(taskText);
+            }, reminderTime * 1000); // Convert seconds to milliseconds
+        }
+
+        function removeTask(button) {
+            let li = button.parentElement;
+            li.remove();
+        }
+
+        function showNotification(task) {
+            if (Notification.permission === "granted") {
+                new Notification("Reminder", {
+                    body: "Don't forget: " + task,
+                    icon: "https://cdn-icons-png.flaticon.com/512/1827/1827379.png"
+                });
+            }
+        }
+
+        // Request notification permission on page load
+        requestNotificationPermission();
+    </script>
+
+</body>
+</html>
